@@ -461,46 +461,51 @@ if __name__ == "__main__":
 
     print(f"\nLoaded {len(test_instructions)} test samples")
 
-    # Set to evaluate all test samples
-    infer_numbers = 256
-    # ===== Build In-Task FAISS Index =====
-
-    train_prostt5 = np.load(os.path.join(parent_dir, f"hybrid_{now_task}_train_prostt5.npy"))
-    train_prostt5_norm = train_prostt5 / np.linalg.norm(train_prostt5, axis=1, keepdims=True)
-    train_faiss_index = faiss.IndexHNSWFlat(train_prostt5_norm.shape[1], 32)
-    train_faiss_index.hnsw.efSearch = max(50, now_k * 2)
-    train_faiss_index.add(train_prostt5_norm.astype(np.float32))
-    train_D, train_I = train_faiss_index.search(train_prostt5_norm.astype(np.float32), now_k)
+    # Set to evaluate full test split (task-blind: no 256 cap)
+    infer_numbers = len(test_instructions)
 
     # ===== Contrastive Multi-Hop RAPM =====
+    # In-task FAISS index removed: cross-task-only retrieval prevents within-task
+    # description leakage (training/test splits are disjoint by sequence but not
+    # by description on Prot-Inst-OOD).
 
     all_answers = []
+    all_top1_retrieved = []   # top-1 retrieval-only baseline
     all_labels = []
     all_meta_labels = []
+    all_retrieved_contexts = []  # for overlap score
 
-    # Get task-specific instructions
+    # Task-blind: no category-specific guidance. The model infers task type
+    # from the natural-language instruction alone.
     task_type = now_task.replace("_OOD", "")
-    task_guidance = get_task_specific_instructions(task_type)
+    task_guidance = ""  # get_task_specific_instructions disabled — no task-label conditioning
 
-    print(f"\n=== Running Enhanced RAPM with Terminology-Focused Prompting on {infer_numbers} samples ===")
+    print(f"\n=== Pre-computing batch retrievals for {infer_numbers} samples ===")
 
-    for i in tqdm(range(infer_numbers)):
+    # Batch FAISS search (much faster than per-sample queries)
+    D_prostt5, I_prostt5 = prostt5_index.search(test_prostt5_norm[:infer_numbers].astype(np.float32), now_k * 4)
+    D_esm2, I_esm2 = esm2_index.search(test_esm2_norm[:infer_numbers].astype(np.float32), now_k * 4)
 
-        # === Weighted Similarity Retrieval (Simple, No Multi-Hop) ===
-        retrieval_results = weighted_similarity_retrieval(
-            test_prostt5_norm[i:i+1], test_esm2_norm[i:i+1],
-            prostt5_index, esm2_index,
-            top_k=now_k, alpha=alpha,
-            distance_conversion=distance_conversion,
-            score_normalization=score_normalization
-        )[0]
+    # Pre-build all RAG prompts so worker threads are pure inference
+    rag_prompts = []
+    top1_retrieved_list = []
+    retrieved_context_list = []
 
-        # Group retrieved proteins by confidence levels
-        high_conf = []
-        medium_conf = []
-        low_conf = []
+    for i in range(infer_numbers):
+        # Weighted similarity fusion on pre-fetched neighbors
+        prostt5_scores = distance_to_similarity(D_prostt5[i])
+        esm2_scores = distance_to_similarity(D_esm2[i])
 
-        for idx, score in retrieval_results[:now_k]:
+        candidate_scores = {}
+        for rank, (idx, s) in enumerate(zip(I_prostt5[i], prostt5_scores)):
+            candidate_scores[int(idx)] = candidate_scores.get(int(idx), 0) + alpha * float(s)
+        for rank, (idx, s) in enumerate(zip(I_esm2[i], esm2_scores)):
+            candidate_scores[int(idx)] = candidate_scores.get(int(idx), 0) + (1 - alpha) * float(s)
+
+        retrieval_results = sorted(candidate_scores.items(), key=lambda x: x[1], reverse=True)[:now_k]
+
+        high_conf, medium_conf, low_conf = [], [], []
+        for idx, score in retrieval_results:
             annotation = all_train_labels[idx]
             if score >= 0.9:
                 high_conf.append(annotation)
@@ -509,12 +514,8 @@ if __name__ == "__main__":
             else:
                 low_conf.append(annotation)
 
-        # === Get In-Task Examples ===
-        train_examples = []
-        for idx, score in zip(train_I[i][:5], train_D[i][:5]):
-            train_examples.append(train_labels[idx])
-
-        # === Construct Enhanced Prompt (Simple, Focused on Terminology) ===
+        top1_retrieved_list.append(all_train_labels[retrieval_results[0][0]] if retrieval_results else "")
+        retrieved_context_list.append(" ".join(all_train_labels[idx] for idx, _ in retrieval_results))
 
         RAG_prompt = f"""You are a protein function prediction expert with deep knowledge of biological terminology.
 
@@ -523,7 +524,7 @@ if __name__ == "__main__":
 **Query Protein Sequence**:
 {test_seqs[i]}
 
-**Retrieved Similar Proteins (Weighted Similarity: α={alpha})**:
+**Retrieved Similar Proteins (Weighted Similarity: α={alpha}, cross-task)**:
 
 🟢 **High Confidence Matches (score ≥ 0.9)**:
 {chr(10).join([f"  • {ann}" for ann in high_conf]) if high_conf else "  None"}
@@ -534,35 +535,80 @@ if __name__ == "__main__":
 🔴 **Lower Confidence Matches (score < 0.7)**:
 {chr(10).join([f"  • {ann}" for ann in low_conf]) if low_conf else "  None"}
 
-**In-Task Training Examples** (for format reference):
-{chr(10).join([f"  • {ex}" for ex in train_examples[:3]])}
-
-{task_guidance}
-
 **IMPORTANT INSTRUCTIONS**:
 1. **Use PRECISE biological terminology** from the retrieved annotations
 2. **Prioritize high-confidence matches** - they are most similar
 3. **Extract domain-specific terms** (enzyme names, GO terms, motifs, etc.)
 4. **Avoid generic descriptions** - be specific
-5. **Match the terminology style** of the training examples
+5. **Synthesize** a description for THIS query protein
 
 Output ONLY the functional description in JSON format:
 {{"description": "..."}}
 
 Do not include explanations, justifications, or any other text. Only the JSON answer.
 """
+        rag_prompts.append(RAG_prompt)
 
-        # === API Inference ===
-        LLM_answer = api_inference(RAG_prompt, model=model)
+    # ===== Parallel API Inference =====
+    import os as _os
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    MAX_WORKERS = int(_os.environ.get("LLM_MAX_WORKERS", "30"))
 
-        all_answers.append(LLM_answer)
-        all_labels.append(test_labels[i])
-        all_meta_labels.append(test_metas[i])
+    answers_buf = [None] * infer_numbers
+    print(f"\n=== Running task-blind RAPM inference on {infer_numbers} samples (workers={MAX_WORKERS}) ===")
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        future_to_idx = {
+            executor.submit(api_inference, rag_prompts[i], model): i
+            for i in range(infer_numbers)
+        }
+        for future in tqdm(as_completed(future_to_idx), total=infer_numbers, desc="Inference"):
+            i = future_to_idx[future]
+            try:
+                answers_buf[i] = future.result()
+            except Exception as e:
+                print(f"Sample {i} failed: {e}")
+                answers_buf[i] = ""
+
+    all_answers = answers_buf
+    all_top1_retrieved = top1_retrieved_list
+    all_labels = list(test_labels[:infer_numbers])
+    all_meta_labels = list(test_metas[:infer_numbers])
+    all_retrieved_contexts = retrieved_context_list
 
     # ===== Evaluate Results =====
 
+    def retrieval_overlap_score(predictions, retrieved_contexts):
+        """
+        Fraction of prediction words that appear in the retrieved context.
+        Measures how much the LLM copies vs. synthesizes.
+        High score = LLM mostly copies retrieved text.
+        Low score = LLM synthesizes beyond retrieved context.
+        """
+        scores = []
+        for pred, ctx in zip(predictions, retrieved_contexts):
+            pred_words = set(extract_words(pred))
+            ctx_words = set(extract_words(ctx))
+            if not pred_words:
+                scores.append(0.0)
+            else:
+                overlap = len(pred_words & ctx_words) / len(pred_words)
+                scores.append(overlap)
+        return scores
+
     print("\n=== Evaluating predictions ===")
+    print("\n--- LLM RAPM (cross-task retrieval) ---", file=result_file)
     evaluation(all_answers, all_labels, all_meta_labels, result_file)
+
+    print("\n--- Top-1 Retrieval-Only Baseline ---", file=result_file)
+    print("\n--- Top-1 Retrieval-Only Baseline ---")
+    evaluation(all_top1_retrieved, all_labels, all_meta_labels, result_file)
+
+    overlap_scores = retrieval_overlap_score(all_answers, all_retrieved_contexts)
+    mean_overlap = np.mean(overlap_scores) * 100
+    print(f"\nPrediction-vs-Retrieved Overlap Score: {mean_overlap:.2f}%", file=result_file)
+    print(f"Prediction-vs-Retrieved Overlap Score: {mean_overlap:.2f}%")
+    print("(fraction of prediction words found in retrieved context; high = more copying, low = more synthesis)", file=result_file)
 
     # Save detailed results
     print(f"\n=== Saving detailed results ===")
@@ -574,6 +620,8 @@ Do not include explanations, justifications, or any other text. Only the JSON an
                 "instruction": test_instructions[i],
                 "sequence": test_seqs[i],
                 "answer": all_answers[i],
+                "top1_retrieved": all_top1_retrieved[i],
+                "retrieval_overlap": round(overlap_scores[i], 4),
                 "label": all_labels[i],
                 "meta_label": all_meta_labels[i]
             }
