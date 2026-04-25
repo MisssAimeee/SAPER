@@ -452,12 +452,16 @@ if __name__ == "__main__":
     test_metas = [d["metadata"] for d in dic if d['split'] == 'test']
 
     train_labels = [d["description"] for d in dic if d['split'] == 'train']
+    train_seqs_all = [d["sequence"] for d in dic if d['split'] == 'train']
 
-    # Fixed random sample of 3 within-task training descriptions for format reference.
+    # Fixed random sample of 3 within-task (sequence, description) pairs for format reference.
     # Using seed=42 so examples are consistent across runs.
     rng = np.random.default_rng(42)
     few_shot_indices = rng.choice(len(train_labels), size=min(3, len(train_labels)), replace=False)
-    few_shot_examples = [train_labels[i] for i in few_shot_indices]
+    few_shot_examples = [
+        {"sequence": train_seqs_all[i], "description": train_labels[i]}
+        for i in few_shot_indices
+    ]
 
     test_prostt5 = np.load(os.path.join(parent_dir, f"hybrid_{now_task}_test_prostt5.npy"))
     test_esm2 = np.load(os.path.join(parent_dir, f"hybrid_{now_task}_test_esm2.npy"))
@@ -541,8 +545,8 @@ if __name__ == "__main__":
 **Lower Confidence Matches (score < 0.7)**:
 {chr(10).join([f"  • {ann}" for ann in low_conf]) if low_conf else "  None"}
 
-**Example outputs for this task** (format reference, within-task):
-{chr(10).join([f"  • {ex}" for ex in few_shot_examples])}
+**Example input-output pairs for this task** (format reference, within-task):
+{chr(10).join([f"  Input sequence: {ex['sequence'][:80]}...{chr(10)}  Output: {ex['description']}" for ex in few_shot_examples])}
 
 **IMPORTANT INSTRUCTIONS**:
 1. **Use PRECISE biological terminology** from the retrieved annotations
