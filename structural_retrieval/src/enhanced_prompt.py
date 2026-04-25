@@ -28,7 +28,7 @@ import time
 from collections import defaultdict, Counter
 import re
 
-import google.generativeai as genai
+import google.generativeai as genai  # imported for compatibility only; api_inference is overridden below
 from nltk.translate.bleu_score import corpus_bleu
 from nltk.translate.meteor_score import meteor_score
 from rouge_score import rouge_scorer
@@ -168,7 +168,7 @@ def get_task_specific_instructions(task_name):
     return task_instructions.get(task_name, "Use precise biological terminology in your prediction.")
 
 
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY", "unused"))
 
 
 # ===== Evaluation Functions =====
@@ -344,10 +344,11 @@ if __name__ == "__main__":
     model = sys.argv[4] if len(sys.argv) > 4 else "claude-sonnet-4-6"
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    parent_dir = os.path.dirname(script_dir)
+    parent_dir = os.path.dirname(script_dir)           # structural_retrieval/
+    saper_root = os.path.dirname(parent_dir)           # SAPER/
     results_dir = os.path.join(parent_dir, "results")
     os.makedirs(results_dir, exist_ok=True)
-    dataset_path = os.path.join(os.path.dirname(script_dir), "dataset")
+    dataset_path = os.path.join(saper_root, "dataset")
 
     # Configuration
     distance_conversion = 'inverse'
