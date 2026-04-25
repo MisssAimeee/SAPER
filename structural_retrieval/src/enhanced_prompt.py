@@ -526,13 +526,13 @@ if __name__ == "__main__":
 
 **Retrieved Similar Proteins (Weighted Similarity: α={alpha}, cross-task)**:
 
-🟢 **High Confidence Matches (score ≥ 0.9)**:
+**High Confidence Matches (score ≥ 0.9)**:
 {chr(10).join([f"  • {ann}" for ann in high_conf]) if high_conf else "  None"}
 
-🟡 **Medium Confidence Matches (0.7 ≤ score < 0.9)**:
+**Medium Confidence Matches (0.7 ≤ score < 0.9)**:
 {chr(10).join([f"  • {ann}" for ann in medium_conf]) if medium_conf else "  None"}
 
-🔴 **Lower Confidence Matches (score < 0.7)**:
+**Lower Confidence Matches (score < 0.7)**:
 {chr(10).join([f"  • {ann}" for ann in low_conf]) if low_conf else "  None"}
 
 **IMPORTANT INSTRUCTIONS**:
