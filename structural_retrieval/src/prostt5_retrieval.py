@@ -5,7 +5,7 @@ and compares with MMSeqs2 sequence-based retrieval.
 """
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'retrival_methods'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'retrival_methods'))
 
 from transformers import AutoTokenizer
 import numpy as np

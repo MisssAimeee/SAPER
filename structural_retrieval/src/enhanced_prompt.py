@@ -323,6 +323,12 @@ def api_inference(RAG_prompt, model):
     return output_results
 
 
+# ===== Override Gemini api_inference with Anthropic Claude shim =====
+import sys as _sys
+_sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+from claude_inference import api_inference  # noqa: E402,F401  (overrides above)
+
+
 # ===== Main Pipeline =====
 
 if __name__ == "__main__":

@@ -226,14 +226,18 @@ def api_inference(RAG_prompt, model):
     return output_results
 
 
+# Override Gemini api_inference with Anthropic Claude shim.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from claude_inference import api_inference  # noqa: E402,F401
+
+
 if __name__ == "__main__":
 
     now_task = sys.argv[1]
     now_k = int(sys.argv[2])
 
-    # Default to Gemini 2.5 Flash (best cost-performance)
-    # Can override with: python GEMINI_inference.py <task> <k> <model>
-    model = sys.argv[3] if len(sys.argv) > 3 else "gemini-2.5-flash"
+    # Default model. Can override at the CLI: python GEMINI_inference.py <task> <k> <model>
+    model = sys.argv[3] if len(sys.argv) > 3 else "claude-sonnet-4-5"
 
     result_file = open("gemini_evaluation_256_results.txt", "a+")
     all_input_prompt_len = 0

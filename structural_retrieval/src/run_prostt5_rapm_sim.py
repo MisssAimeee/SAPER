@@ -292,9 +292,10 @@ def evaluation(lines, labels, meta_labels, result_file):
     print("Exact Match:", total_exact_match / len(lines), file=result_file)
 
 
-# ===== Gemini API Functions =====
-
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+# ===== LLM API Functions =====
+# Switched to Anthropic Claude. The local api_inference() defined below is the
+# original Gemini version, kept for reference. The trailing import overrides it.
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY", "unused"))
 
 
 def api_inference(RAG_prompt, model):
@@ -370,6 +371,13 @@ def api_inference(RAG_prompt, model):
         output_results = ""
 
     return output_results
+
+
+# ===== Override Gemini api_inference with Anthropic Claude shim =====
+# Repo root is two levels up from this file (../../).
+import sys as _sys
+_sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+from claude_inference import api_inference  # noqa: E402,F401  (overrides above)
 
 
 # ===== Main RAPM Pipeline =====
