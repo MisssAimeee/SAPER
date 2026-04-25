@@ -6,8 +6,8 @@ structural_retrieval/src/run_prostt5_rapm_sim.py.
 
 Differences from the Gemini version, all intentional:
 - Reads ANTHROPIC_API_KEY (not GEMINI_API_KEY).
-- Default model is `claude-sonnet-4-5` if the caller passes a Gemini model
-  name (we silently rewrite gemini-* -> claude-sonnet-4-5 so the existing
+- Default model is `claude-sonnet-4-6` if the caller passes a Gemini model
+  name (we silently rewrite gemini-* -> claude-sonnet-4-6 so the existing
   shell commands keep working). Override with the LLM_MODEL env var or the
   CLI's [model] argument.
 - No safety_settings: Anthropic exposes no equivalent BLOCK_NONE flag for
@@ -24,7 +24,7 @@ import anthropic
 
 
 # ── Defaults you can override via env vars ───────────────────────────────────
-DEFAULT_MODEL = os.environ.get("LLM_MODEL", "claude-sonnet-4-5")
+DEFAULT_MODEL = os.environ.get("LLM_MODEL", "claude-sonnet-4-6")
 DEFAULT_MAX_TOKENS = int(os.environ.get("LLM_MAX_TOKENS", "4096"))
 DEFAULT_TEMPERATURE = float(os.environ.get("LLM_TEMPERATURE", "0.7"))
 

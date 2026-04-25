@@ -1,5 +1,5 @@
 """
-ProstT5-based RAPM inference using Gemini API.
+ProstT5-based RAPM inference using Claude API.
 This script runs end-to-end evaluation using structurally-aware retrieval.
 """
 import json
@@ -8,7 +8,7 @@ import random
 import os
 import sys
 
-import google.generativeai as genai
+import google.generativeai as genai  # kept for import compatibility; overridden below
 from nltk.translate.bleu_score import corpus_bleu
 from nltk.translate.meteor_score import meteor_score
 from rouge_score import rouge_scorer
@@ -137,8 +137,8 @@ def evaluation(lines, labels, meta_labels, result_file):
     print("Exact Match:", total_exact_match / len(lines), file=result_file)
 
 
-# Configure Gemini API
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+# Configure Gemini API (kept for compatibility; api_inference is overridden below)
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY", "unused"))
 
 
 def api_inference(RAG_prompt, model):
@@ -230,18 +230,24 @@ def api_inference(RAG_prompt, model):
     return output_results
 
 
+# ===== Override Gemini api_inference with Anthropic Claude shim =====
+import sys as _sys
+_sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+from claude_inference import api_inference  # noqa: E402,F401  (overrides above)
+
+
 if __name__ == "__main__":
 
     if len(sys.argv) < 3:
         print("Usage: python run_prostt5_rapm.py <task_name> <top_k> [model]")
-        print("Example: python run_prostt5_rapm.py protein_function_OOD 10 gemini-2.5-flash")
+        print("Example: python run_prostt5_rapm.py protein_function_OOD 10 claude-sonnet-4-6")
         sys.exit(1)
 
     now_task = sys.argv[1]
     now_k = int(sys.argv[2])
 
-    # Default to Gemini 2.5 Flash (best cost-performance)
-    model = sys.argv[3] if len(sys.argv) > 3 else "gemini-2.5-flash"
+    # Default to Claude Sonnet 4.6
+    model = sys.argv[3] if len(sys.argv) > 3 else "claude-sonnet-4-6"
 
     # Get script directory and parent directory for input/output
     script_dir = os.path.dirname(os.path.abspath(__file__))

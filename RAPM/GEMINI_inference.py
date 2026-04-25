@@ -237,7 +237,7 @@ if __name__ == "__main__":
     now_k = int(sys.argv[2])
 
     # Default model. Can override at the CLI: python GEMINI_inference.py <task> <k> <model>
-    model = sys.argv[3] if len(sys.argv) > 3 else "claude-sonnet-4-5"
+    model = sys.argv[3] if len(sys.argv) > 3 else "claude-sonnet-4-6"
 
     result_file = open("gemini_evaluation_256_results.txt", "a+")
     all_input_prompt_len = 0

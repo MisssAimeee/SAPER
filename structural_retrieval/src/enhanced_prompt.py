@@ -335,13 +335,13 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 3:
         print("Usage: python con_retrieval.py <task_name> <top_k> [alpha] [model]")
-        print("Example: python con_retrieval.py protein_function_OOD 10 0.7 gemini-2.5-flash")
+        print("Example: python con_retrieval.py protein_function_OOD 10 0.7 claude-sonnet-4-6")
         sys.exit(1)
 
     now_task = sys.argv[1]
     now_k = int(sys.argv[2])
     alpha = float(sys.argv[3]) if len(sys.argv) > 3 else 0.7
-    model = sys.argv[4] if len(sys.argv) > 4 else "gemini-2.5-flash"
+    model = sys.argv[4] if len(sys.argv) > 4 else "claude-sonnet-4-6"
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(script_dir)
