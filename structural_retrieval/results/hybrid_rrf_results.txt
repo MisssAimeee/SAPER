@@ -1,0 +1,64 @@
+
+================================================================================
+Hybrid RRF (ProstT5 + ESM-2) Protein Retrieval Evaluation
+================================================================================
+
+============================================================
+Task: protein_function_OOD
+============================================================
+
+Hybrid RRF (ProstT5 + ESM-2) retrieval for protein_function_OOD...
+BLEU-2 score: 48.00052002031124
+BLEU-4 score: 39.122644009979986
+Meta-BLEU-2 score: 44.38647524903514
+Meta-BLEU-4 score: 40.01279337653845
+Average Meteor score: 51.90164206596668
+ROUGE score:
+rouge1: 52.42722720047234
+rouge2: 33.49242584212464
+rougeL: 45.222707964251136
+Exact Match: 0.020594131583743392
+
+MMSeqs2 sequence retrieval for protein_function_OOD...
+BLEU-2 score: 42.413569627643106
+BLEU-4 score: 34.274673564929024
+Meta-BLEU-2 score: 45.22190887834544
+Meta-BLEU-4 score: 40.54450124037591
+Average Meteor score: 48.007046757765906
+ROUGE score:
+rouge1: 49.91632507320132
+rouge2: 31.213908361884922
+rougeL: 42.535677908716266
+Exact Match: 0.0034627300893019866
+
+============================================================
+Combined All-Task Evaluation
+============================================================
+
+MMSeqs2 retrieval for all_task...
+
+Evaluation for task: protein_function_OOD_all_mmseqs
+BLEU-2 score: 42.413569627643106
+BLEU-4 score: 34.274673564929024
+Meta-BLEU-2 score: 45.22190887834544
+Meta-BLEU-4 score: 40.54450124037591
+Average Meteor score: 48.007046757765906
+ROUGE score:
+rouge1: 49.91632507320132
+rouge2: 31.213908361884922
+rougeL: 42.535677908716266
+Exact Match: 0.0034627300893019866
+
+Hybrid RRF retrieval for all_task...
+
+Evaluation for task: protein_function_OOD_all_rrf
+BLEU-2 score: 47.413462537630544
+BLEU-4 score: 38.51485299083424
+Meta-BLEU-2 score: 43.404229120757606
+Meta-BLEU-4 score: 39.038198496906304
+Average Meteor score: 50.96796264371224
+ROUGE score:
+rouge1: 52.22132052831788
+rouge2: 33.247899744470985
+rougeL: 45.063588385031004
+Exact Match: 0.021687625296154547

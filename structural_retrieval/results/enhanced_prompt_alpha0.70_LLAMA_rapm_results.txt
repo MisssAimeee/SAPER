@@ -1,0 +1,122 @@
+=== Re-evaluation run ===
+Re-scoring 4 task file(s) using tokenizer currently configured in enhanced_prompt.evaluation
+
+================================================================================
+Task file: ENHANCED_PROMPT_alpha0.70_catalytic_activity_OOD_10_results.json  (n=1987)
+
+--- LLM RAPM (cross-task retrieval) ---
+BLEU-2 score: 24.815340058523947
+BLEU-4 score: 18.908021953892423
+Meta-BLEU-2 score: 43.63393233483373
+Meta-BLEU-4 score: 36.899703021162736
+Average Meteor score: 46.751503093110856
+ROUGE score:
+rouge1: 41.9974461522539
+rouge2: 24.458919766984778
+rougeL: 39.483825293869515
+Exact Match: 0.0050327126321087065
+
+--- Top-1 Retrieval-Only Baseline ---
+BLEU-2 score: 11.827609704137764
+BLEU-4 score: 7.531175048737472
+Meta-BLEU-2 score: 2.3204930946861104
+Meta-BLEU-4 score: 1.8484150842951588
+Average Meteor score: 17.705575514266116
+ROUGE score:
+rouge1: 13.761216065160145
+rouge2: 4.286668777162705
+rougeL: 11.206141260401909
+Exact Match: 0.0
+
+Prediction-vs-Retrieved Overlap Score: 54.25%
+(reused from saved JSONL; word-level, tokenizer-independent)
+
+================================================================================
+Task file: ENHANCED_PROMPT_alpha0.70_domain_motif_OOD_10_results.json  (n=2732)
+
+--- LLM RAPM (cross-task retrieval) ---
+BLEU-2 score: 7.567242437459389
+BLEU-4 score: 5.072335091763021
+Meta-BLEU-2 score: 43.569113005919604
+Meta-BLEU-4 score: 34.5693979684664
+Average Meteor score: 40.67197476797696
+ROUGE score:
+rouge1: 20.102865526141255
+rouge2: 11.00685082518281
+rougeL: 17.425987255015194
+Exact Match: 0.00036603221083455345
+
+--- Top-1 Retrieval-Only Baseline ---
+BLEU-2 score: 3.1529780565317425
+BLEU-4 score: 1.7829237445298847
+Meta-BLEU-2 score: 2.0031115095572782
+Meta-BLEU-4 score: 1.569467811893057
+Average Meteor score: 13.048191333183984
+ROUGE score:
+rouge1: 7.019726681859671
+rouge2: 2.2019019375721807
+rougeL: 6.351662066426467
+Exact Match: 0.0
+
+Prediction-vs-Retrieved Overlap Score: 54.15%
+(reused from saved JSONL; word-level, tokenizer-independent)
+
+================================================================================
+Task file: ENHANCED_PROMPT_alpha0.70_general_function_OOD_10_results.json  (n=4297)
+
+--- LLM RAPM (cross-task retrieval) ---
+BLEU-2 score: 16.739340602043267
+BLEU-4 score: 11.221677872772744
+Meta-BLEU-2 score: 29.239989834604906
+Meta-BLEU-4 score: 21.037332976065372
+Average Meteor score: 38.284702028765864
+ROUGE score:
+rouge1: 30.895608931333797
+rouge2: 16.046279589946984
+rougeL: 24.74367700569654
+Exact Match: 0.0
+
+--- Top-1 Retrieval-Only Baseline ---
+BLEU-2 score: 9.41745673750341
+BLEU-4 score: 7.670088211239292
+Meta-BLEU-2 score: 1.1622353486178194
+Meta-BLEU-4 score: 1.0175217030214758
+Average Meteor score: 15.24709895417865
+ROUGE score:
+rouge1: 15.805014902582936
+rouge2: 8.560324968199975
+rougeL: 13.465334226656536
+Exact Match: 0.0
+
+Prediction-vs-Retrieved Overlap Score: 54.91%
+(reused from saved JSONL; word-level, tokenizer-independent)
+
+================================================================================
+Task file: ENHANCED_PROMPT_alpha0.70_protein_function_OOD_10_results.json  (n=5487)
+
+--- LLM RAPM (cross-task retrieval) ---
+BLEU-2 score: 20.981884430303808
+BLEU-4 score: 15.106481502056207
+Meta-BLEU-2 score: 56.97744995931886
+Meta-BLEU-4 score: 47.27424159883501
+Average Meteor score: 55.71833339231355
+ROUGE score:
+rouge1: 36.439949782732874
+rouge2: 19.422247399077825
+rougeL: 27.606297697315284
+Exact Match: 0.00018224895206852561
+
+--- Top-1 Retrieval-Only Baseline ---
+BLEU-2 score: 15.714509987264005
+BLEU-4 score: 12.052394513790157
+Meta-BLEU-2 score: 10.05799333629895
+Meta-BLEU-4 score: 8.529371577952132
+Average Meteor score: 27.63335578141188
+ROUGE score:
+rouge1: 19.782844898542816
+rouge2: 10.535636867634
+rougeL: 15.624931908827316
+Exact Match: 0.0
+
+Prediction-vs-Retrieved Overlap Score: 60.18%
+(reused from saved JSONL; word-level, tokenizer-independent)
