@@ -181,7 +181,7 @@ def extract_words(text):
 
 def evaluation(lines, labels, meta_labels, result_file):
     """Evaluate LLM predictions using BLEU, Meta-BLEU, METEOR, ROUGE, and Exact Match."""
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.2-1B-Instruct", use_fast=False)
+    tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
     tokenizer.pad_token_id = tokenizer.eos_token_id
     labels = [l.strip() for l in labels]
     lines = [line.strip() for line in lines]
