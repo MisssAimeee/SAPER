@@ -1,0 +1,112 @@
+Task: catalytic_activity_OOD, Top-K: 10, Alpha: 0.7, Model: claude-sonnet-4-6
+
+--- LLM RAPM (cross-task retrieval) ---
+BLEU-2 score: 25.03575713624872
+BLEU-4 score: 19.07430436453496
+Meta-BLEU-2 score: 45.46705098185509
+Meta-BLEU-4 score: 38.423460020180194
+Average Meteor score: 48.18183655782312
+ROUGE score:
+rouge1: 41.41903604658872
+rouge2: 24.091537624489334
+rougeL: 38.81894080123514
+Exact Match: 0.004026170105686965
+
+--- Top-1 Retrieval-Only Baseline ---
+BLEU-2 score: 11.605549407948859
+BLEU-4 score: 7.3565640171799656
+Meta-BLEU-2 score: 2.2544841021493385
+Meta-BLEU-4 score: 1.7900611028083744
+Average Meteor score: 17.394796413034296
+ROUGE score:
+rouge1: 13.659354412110126
+rouge2: 4.2065540924541125
+rougeL: 11.058324208388571
+Exact Match: 0.0
+
+Prediction-vs-Retrieved Overlap Score: 54.81%
+(fraction of prediction words found in retrieved context; high = more copying, low = more synthesis)
+Task: domain_motif_OOD, Top-K: 10, Alpha: 0.7, Model: claude-sonnet-4-6
+
+--- LLM RAPM (cross-task retrieval) ---
+BLEU-2 score: 8.219490438679992
+BLEU-4 score: 5.58568918646241
+Meta-BLEU-2 score: 43.836988867426086
+Meta-BLEU-4 score: 34.80902348716908
+Average Meteor score: 41.77256123654543
+ROUGE score:
+rouge1: 21.335521526037642
+rouge2: 11.872492116832046
+rougeL: 18.556623983546476
+Exact Match: 0.0010980966325036604
+
+--- Top-1 Retrieval-Only Baseline ---
+BLEU-2 score: 3.165029162895587
+BLEU-4 score: 1.7914620455239414
+Meta-BLEU-2 score: 2.0328880131335847
+Meta-BLEU-4 score: 1.5908720018015636
+Average Meteor score: 13.12184801905377
+ROUGE score:
+rouge1: 6.980507033530453
+rouge2: 2.2011420765032983
+rougeL: 6.3160633648674676
+Exact Match: 0.0
+
+Prediction-vs-Retrieved Overlap Score: 54.22%
+(fraction of prediction words found in retrieved context; high = more copying, low = more synthesis)
+Task: general_function_OOD, Top-K: 10, Alpha: 0.7, Model: claude-sonnet-4-6
+
+--- LLM RAPM (cross-task retrieval) ---
+BLEU-2 score: 17.81045951807671
+BLEU-4 score: 12.062824280323024
+Meta-BLEU-2 score: 30.640170052186853
+Meta-BLEU-4 score: 22.26843066982969
+Average Meteor score: 39.410156261773
+ROUGE score:
+rouge1: 32.40980856922953
+rouge2: 17.498105329206766
+rougeL: 26.511564047496705
+Exact Match: 0.0
+
+--- Top-1 Retrieval-Only Baseline ---
+BLEU-2 score: 9.447464503194682
+BLEU-4 score: 7.695173417294201
+Meta-BLEU-2 score: 1.1918486814031664
+Meta-BLEU-4 score: 1.0427291996554546
+Average Meteor score: 15.384917862851117
+ROUGE score:
+rouge1: 15.910929642258017
+rouge2: 8.660788234054431
+rougeL: 13.552532918720239
+Exact Match: 0.0
+
+Prediction-vs-Retrieved Overlap Score: 55.72%
+(fraction of prediction words found in retrieved context; high = more copying, low = more synthesis)
+Task: protein_function_OOD, Top-K: 10, Alpha: 0.7, Model: claude-sonnet-4-6
+
+--- LLM RAPM (cross-task retrieval) ---
+BLEU-2 score: 20.524868825884827
+BLEU-4 score: 14.711243208857313
+Meta-BLEU-2 score: 57.0850891242375
+Meta-BLEU-4 score: 47.21501042704971
+Average Meteor score: 56.334751934023984
+ROUGE score:
+rouge1: 35.64527196686799
+rouge2: 18.880364681373155
+rougeL: 26.981968722197337
+Exact Match: 0.0
+
+--- Top-1 Retrieval-Only Baseline ---
+BLEU-2 score: 15.880099145975027
+BLEU-4 score: 12.209063121054301
+Meta-BLEU-2 score: 10.432425974809096
+Meta-BLEU-4 score: 8.855744822776492
+Average Meteor score: 27.97804419056127
+ROUGE score:
+rouge1: 19.932292758093844
+rouge2: 10.692993942216598
+rougeL: 15.759089693523084
+Exact Match: 0.0
+
+Prediction-vs-Retrieved Overlap Score: 60.60%
+(fraction of prediction words found in retrieved context; high = more copying, low = more synthesis)
